@@ -53,6 +53,24 @@ app.post('/quotes', (req, res)=> {
   res.json(newQuote)
 })
 
+// UPDATE a quote
+app.put('/quotes/:id', (req, res)=> {
+  var quote = getQuote(req.params.id)
+  if(quote) {
+    if (req.body.hasOwnProperty('text')) { quote.text = req.body.text }
+    if (req.body.hasOwnProperty('author')) { quote.author = req.body.author }
+    // remove old quote
+    quotes = _.reject(quotes, (quote2)=> { return quote2.id === quote.id })
+    // prepend updated quote to quotes list
+    quotes.unshift(quote)
+    // respond with updated quote
+    res.json(quote)
+  } else {
+    res.status(404)
+    return res.json({error: 'Quote not found.'})
+  }
+})
+
 // DELETE a quote
 app.delete('/quotes/:id', (req, res)=> {
   var quote = getQuote(req.params.id)
