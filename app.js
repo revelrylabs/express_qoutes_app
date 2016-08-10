@@ -5,8 +5,6 @@ var app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.all('*', errorHandler)
-
 var quotes = [
   { id: _.uniqueId(), author : 'Audrey Hepburn', text : "Nothing is impossible, the word itself says 'I'm possible'!"},
   { id: _.uniqueId(), author : 'Walt Disney', text : "You may not realize it when it happens, but a kick in the teeth may be the best thing in the world for you"},
@@ -57,7 +55,6 @@ app.post('/quotes', (req, res)=> {
 
 // DELETE a quote
 app.delete('/quotes/:id', (req, res)=> {
-  throw new Error('Things done changed')
   var quote = getQuote(req.params.id)
   if (quote) {
     quotes = _.reject(quotes, (quote2)=> { return quote.id == quote2.id })
@@ -78,11 +75,6 @@ function getQuote(quoteID) {
   return _.find(quotes, (quote)=> { return quote.id == quoteID })
 }
 
-// generic error wrapper
-function error(status, message) {
-  return { status, error: {message} }
-}
-
 function logErrors(err, req, res, next) {
   console.error(err.stack);
   next(err);
@@ -91,7 +83,7 @@ function logErrors(err, req, res, next) {
 function errorHandler(err, req, res, next) {
   if (res.headersSent) { return next(err) }
   res.status(500)
-  res.send(error(500, 'Something went wrong.'))
+  res.json({error: 'Something went wrong.'})
 }
 
 app.use(logErrors)
