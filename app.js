@@ -1,9 +1,11 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const _ = require('underscore')
-const app = express()
+var express = require('express')
+var bodyParser = require('body-parser')
+var _ = require('underscore')
+var app = express()
 
-const urlencodedParser = bodyParser.urlencoded({ extended: false })
+app.use(bodyParser.urlencoded({ extended: false }))
+
+app.all('*', errorHandler)
 
 var quotes = [
   { id: _.uniqueId(), author : 'Audrey Hepburn', text : "Nothing is impossible, the word itself says 'I'm possible'!"},
@@ -19,32 +21,32 @@ app.get('/quotes', (req, res) => {
 
 // SHOW a random quote
 app.get('/quotes/random', (req, res)=> {
-  const id = Math.floor(Math.random() * quotes.length)
-  const q = quotes[id]
+  var id = Math.floor(Math.random() * quotes.length)
+  var q = quotes[id]
   res.json(q)
 })
 
 // SHOW a quote
 app.get('/quotes/:id', (req, res)=> {
-  const quote = getQuote(req.params.id)
+  var quote = getQuote(req.params.id)
   if(quote) {
     res.json(quote)
   } else {
-    res.statusCode = 404
-    return res.send(RequestError(404, 'Quote not found.'))
+    res.status(404)
+    return res.json({error: 'Quote not found.'})
   }
 })
 
 // CREATE a quote
-app.post('/quotes', urlencodedParser, (req, res)=> {
+app.post('/quotes', (req, res)=> {
   if(!req.body.hasOwnProperty('author')) {
-    res.statusCode = 400
-    return res.send(RequestError(400, 'Please provide an author for the quote.'))
+    res.status(400)
+    return res.json({error: 'Please provide an author for the quote.'})
   } else if (!req.body.hasOwnProperty('text')) {
-    res.statusCode = 400
-    return res.send(RequestError(400, 'Please provide text for the quote.'))
+    res.status(400)
+    return res.json({error: 'Please provide text for the quote.'})
   }
-  const newQuote = {
+  var newQuote = {
     id: _.uniqueId(),
     author: req.body.author,
     text: req.body.text,
@@ -55,13 +57,14 @@ app.post('/quotes', urlencodedParser, (req, res)=> {
 
 // DELETE a quote
 app.delete('/quotes/:id', (req, res)=> {
-  const quote = getQuote(req.params.id)
+  throw new Error('Things done changed')
+  var quote = getQuote(req.params.id)
   if (quote) {
     quotes = _.reject(quotes, (quote2)=> { return quote.id == quote2.id })
-    res.json({status: 200})
+    res.send(true)
   } else {
-    res.statusCode = 404
-    return res.send(RequestError(404, 'Quote not found.'))
+    res.status(404)
+    return res.json({error: 'Quote not found.'})
   }
 })
 
@@ -76,8 +79,20 @@ function getQuote(quoteID) {
 }
 
 // generic error wrapper
-function RequestError(status, message) {
+function error(status, message) {
   return { status, error: {message} }
 }
 
-RequestError.prototype = Object.create(Error.prototype)
+function logErrors(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+
+function errorHandler(err, req, res, next) {
+  if (res.headersSent) { return next(err) }
+  res.status(500)
+  res.send(error(500, 'Something went wrong.'))
+}
+
+app.use(logErrors)
+app.use(errorHandler)
