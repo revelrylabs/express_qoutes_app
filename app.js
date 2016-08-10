@@ -31,7 +31,7 @@ app.get('/quotes/:id', (req, res)=> {
     res.json(quote)
   } else {
     res.status(404)
-    return res.json({error: 'Quote not found.'})
+    res.json({error: 'Quote not found.'})
   }
 })
 
@@ -39,10 +39,10 @@ app.get('/quotes/:id', (req, res)=> {
 app.post('/quotes', (req, res)=> {
   if(!req.body.hasOwnProperty('author')) {
     res.status(400)
-    return res.json({error: 'Please provide an author for the quote.'})
+    res.json({error: 'Please provide an author for the quote.'})
   } else if (!req.body.hasOwnProperty('text')) {
     res.status(400)
-    return res.json({error: 'Please provide text for the quote.'})
+    res.json({error: 'Please provide text for the quote.'})
   }
   var newQuote = {
     id: _.uniqueId(),
@@ -67,7 +67,7 @@ app.put('/quotes/:id', (req, res)=> {
     res.json(quote)
   } else {
     res.status(404)
-    return res.json({error: 'Quote not found.'})
+    res.json({error: 'Quote not found.'})
   }
 })
 
@@ -79,7 +79,7 @@ app.delete('/quotes/:id', (req, res)=> {
     res.send(true)
   } else {
     res.status(404)
-    return res.json({error: 'Quote not found.'})
+    res.json({error: 'Quote not found.'})
   }
 })
 
