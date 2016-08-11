@@ -3,7 +3,7 @@ var bodyParser = require('body-parser')
 var _ = require('underscore')
 var app = express()
 
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 var quotes = [
   { id: _.uniqueId(), author : 'Audrey Hepburn', text : "Nothing is impossible, the word itself says 'I'm possible'!"},
