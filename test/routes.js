@@ -7,25 +7,25 @@ var url = 'http://localhost:3000'
 describe('Routing', function() {
   it('allows for viewing all quotes via GET /quotes', function(done) {
     request(url)
-    	.get('/quotes')
+      .get('/quotes')
       .expect(200, done)
   });
 
   it('allows viewing one quote via GET /quotes/:id', function(done) {
     request(url)
-    	.get('/quotes/1')
+      .get('/quotes/1')
       .expect(200, done)
   });
 
   it('allows for viewing one random a quote via GET /quotes/random', function(done) {
     request(url)
-    	.get('/quotes/random')
+      .get('/quotes/random')
       .expect(200, done)
   });
 
   it('allows for creating a quote via POST /quotes', function(done) {
     request(url)
-    	.post('/quotes')
+      .post('/quotes')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .send({ author: 'author', text: 'text' })
