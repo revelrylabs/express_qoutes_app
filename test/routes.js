@@ -17,7 +17,7 @@ describe('Routing', function() {
       .expect(200, done)
   });
 
-  it('allows for viewing one random a quote via GET /quotes/random', function(done) {
+  it('allows for viewing one random quote via GET /quotes/random', function(done) {
     request(url)
       .get('/quotes/random')
       .expect(200, done)
